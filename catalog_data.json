@@ -1,0 +1,47 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "product_name": "Питон обыкновенный",
+        "product_info": "Обыкновенный но хороший",
+        "product_image": "",
+        "product_category": "Питоны",
+        "product_price": 5000.5,
+        "product_create_date": "2023-05-07",
+        "product_last_upd_dt": "2023-05-07"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 1,
+    "fields": {
+        "category_name": "Питоны",
+        "category_info": "Питоны"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 2,
+    "fields": {
+        "category_name": "Джаваскрипты",
+        "category_info": "Лучшие"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 3,
+    "fields": {
+        "category_name": "Техника",
+        "category_info": "Самая лучшая техника"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 4,
+    "fields": {
+        "category_name": "Бытовая техника",
+        "category_info": "Самая лучшая бытовая техника"
+    }
+}
+]

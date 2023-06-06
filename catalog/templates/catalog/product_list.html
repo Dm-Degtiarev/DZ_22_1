@@ -1,0 +1,44 @@
+{% extends 'catalog/base.html' %}
+{% load custom_tags %}
+{% load custom_filters %}
+
+{% block title %}Товары{% endblock %}
+
+{% block content %}
+  <a class="btn btn-secondary" href="{% url 'catalog:product_create' %}" role="button" style="width: 1150px;">Создать товар</a>
+  <br><br><br><br>
+  <div class="row">
+    {% for object in object_list %}
+    <div class="col-4">
+      <div class="row">
+        <div class="col-12">
+          {% if object.product_image %}
+            <img class="rounded-circle" src="{{ object.product_image.url }}" alt="Generic placeholder image" width="200" height="200">
+<!--                <img class="rounded-circle" src="{% mediapath product.product_image %}" alt="Generic placeholder image" width="200" height="200">-->
+<!--                <img class="rounded-circle" src="{{ product.product_image|mediapath }}" alt="Generic placeholder image" width="200" height="200">-->
+          {% else %}
+            <img class="rounded-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="200" height="200">
+          {% endif %}
+        </div>
+        <div class="col-15">
+          <h4>{{ object.product_name }}</h4>
+          <p>Цена: {{ object.product_price }}</p>
+          <p>Описание: {{ object.product_info|slice:"100" }}</p>
+
+            <!-- Вывод информации из связанной таблицы ProductVersion -->
+          {% for version in object.productversion_set.all %}
+              {% if version.actual_flg %}
+                <p>Номер версии: {{ version.number }}</p>
+                <p>Наименоваине версии: {{ version.name }}</p>
+              {% endif %}
+          {% endfor %}
+
+          <a class="btn btn-secondary" href="{% url 'catalog:product_item' object.pk %}" role="button">Подробнее</a>
+          <a class="btn btn-secondary" href="{% url 'catalog:product_update' object.pk %}" role="button">Изменить</a>
+          <a class="btn btn-secondary" href="{% url 'catalog:product_delete' object.pk %}" role="button">Удалить</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+{% load custom_tags %}
+{% load custom_filters %}
+
+<html lang="en">
+<head>
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="/static/js/bootstrap.min.js"> </script>
+    <meta charset="UTF-8">
+    <title>{% block title %}Главная{% endblock %}</title>
+</head>
+<body>
+    <tr> {{ object.product_name }}</tr>
+    <br>
+    {% if object.product_image%}
+        <img class="rounded-circle" src="{{ object.product_image.url }}" alt="Generic placeholder image" width="200" height="200">
+    {% else %}
+        <img class="rounded-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="200" height="200">
+    {% endif %}
+    <br> <a class="btn btn-secondary" href="{% url 'catalog:products_list' %}" role="button">Назад </a>
+</body>
+</html>

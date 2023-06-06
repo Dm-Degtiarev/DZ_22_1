@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+{% load custom_tags %}
+{% load custom_filters %}
+
+<html lang="en">
+<head>
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="/static/js/bootstrap.min.js"> </script>
+    <meta charset="UTF-8">
+    <title>{% block title %}Главная{% endblock %}</title>
+</head>
+<body>
+    <header>
+        {% include 'catalog/includes/inc_catalog_menu.html' %}
+    </header>
+    <main>
+
+    </main>
+    <footer>
+
+    </footer>
+
+      <div class="container objects">
+        {% block content %}
+        {% endblock %}
+      </div>
+    <p>© 2023 Магазин электроники</p>
+
+</body>
+</html>

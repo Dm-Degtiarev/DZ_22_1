@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+{% extends 'catalog/base.html'%}
+{% block title %}Блог{% endblock %}
+
+
+{% block content %}
+        <a class="btn btn-secondary" href="{% url 'catalog:blog_create' %}" role="button" style="width: 1150px;">Создать блог</a>
+
+        <div class="row">
+        {% for object in object_list %}
+            <a href="{% url 'catalog:blog_detail' object.blog_slug %}"><h4>{{ object.blog_name }}</h4></a>
+
+          <div class="col-100">
+              {% if object.blog_image %}
+                <img class="rounded-circle" src="{{ object.blog_image.url }}" alt="Generic placeholder image" width="200" height="200">
+
+              {% else %}
+              <img class="rounded-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="200" height="200">
+              {% endif %}
+            <p> {{ object.blog_content }} </p>
+            <p> Просмотры: {{ object.blog_views_count }}
+                <a class="btn btn-secondary" href="{% url 'catalog:blog_update' object.blog_slug %}" role="button">Изменить </a>
+                <a class="btn btn-secondary" href="{% url 'catalog:blog_delete' object.blog_slug %}" role="button">Удалить </a>
+            </p>
+
+
+
+          </div>
+          {% endfor %}
+{% endblock %}
