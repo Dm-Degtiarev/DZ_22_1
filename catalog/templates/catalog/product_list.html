@@ -5,7 +5,9 @@
 {% block title %}Товары{% endblock %}
 
 {% block content %}
-  <a class="btn btn-secondary" href="{% url 'catalog:product_create' %}" role="button" style="width: 1150px;">Создать товар</a>
+  {% if user.is_authenticated %}
+    <a class="btn btn-secondary" href="{% url 'catalog:product_create' %}" role="button" style="width: 1150px;">Создать товар</a>
+  {% endif %}
   <br><br><br><br>
   <div class="row">
     {% for object in object_list %}
@@ -32,10 +34,11 @@
                 <p>Наименоваине версии: {{ version.name }}</p>
               {% endif %}
           {% endfor %}
-
-          <a class="btn btn-secondary" href="{% url 'catalog:product_item' object.pk %}" role="button">Подробнее</a>
-          <a class="btn btn-secondary" href="{% url 'catalog:product_update' object.pk %}" role="button">Изменить</a>
-          <a class="btn btn-secondary" href="{% url 'catalog:product_delete' object.pk %}" role="button">Удалить</a>
+          {% if user.is_authenticated %}
+              <a class="btn btn-secondary" href="{% url 'catalog:product_item' object.pk %}" role="button">Подробнее</a>
+              <a class="btn btn-secondary" href="{% url 'catalog:product_update' object.pk %}" role="button">Изменить</a>
+              <a class="btn btn-secondary" href="{% url 'catalog:product_delete' object.pk %}" role="button">Удалить</a>
+          {% endif %}
         </div>
       </div>
     </div>

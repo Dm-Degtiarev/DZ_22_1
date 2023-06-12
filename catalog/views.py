@@ -4,6 +4,7 @@ from catalog.models import Product, ProductVersion, Contacts, Blog
 from catalog.forms import *
 from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, DeleteView
 from django.forms.models import inlineformset_factory
+from django.contrib.auth.decorators import login_required
 
 
 #CBV
@@ -34,19 +35,12 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy('catalog:products_list')
 
-    # def form_valid(self, form):
-    #     # Создание нового товара
-    #     self.object = form.save()
-    #
-    #     # Создание инициализирующей версии для нового товара
-    #     initial_version = ProductVersion.objects.create(
-    #         product=self.object,
-    #         number=0,
-    #         name='Инициализирующая версия',
-    #         actual_flg=True
-    #     )
-    #
-    #     return super().form_valid(form)
+    def form_valid(self, form):
+        product = form.save()
+        product.user = self.request.user
+        product.save()
+        return super().form_valid(form)
+
 
 
 class ProductUpdateView(UpdateView):
