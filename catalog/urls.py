@@ -37,4 +37,5 @@ urlpatterns = [
     path('blog/delete/<blog_slug>/', BlogDeleteView.as_view(), name='blog_delete'),
     path('blog/<blog_slug>/', BlogDetailView.as_view(), name='blog_detail'),
 
+
 ]

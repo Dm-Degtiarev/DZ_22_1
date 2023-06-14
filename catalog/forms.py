@@ -14,7 +14,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ('product_name', 'product_info', 'product_image', 'product_price', 'product_category', )
+        fields = ('product_name', 'product_info', 'product_image', 'product_price', 'product_category', 'product_status')
         # exclude = ('', ...) # перечисляем поля которые не хотим отображать
         # fields = '__all__'  # выбираем все поля
 

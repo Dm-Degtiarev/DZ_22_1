@@ -26,6 +26,7 @@
           <h4>{{ object.product_name }}</h4>
           <p>Цена: {{ object.product_price }}</p>
           <p>Описание: {{ object.product_info|slice:"100" }}</p>
+          <p>Владелец продукта: {{ object.product_author }}</p>
 
             <!-- Вывод информации из связанной таблицы ProductVersion -->
           {% for version in object.productversion_set.all %}
@@ -36,8 +37,11 @@
           {% endfor %}
           {% if user.is_authenticated %}
               <a class="btn btn-secondary" href="{% url 'catalog:product_item' object.pk %}" role="button">Подробнее</a>
-              <a class="btn btn-secondary" href="{% url 'catalog:product_update' object.pk %}" role="button">Изменить</a>
-              <a class="btn btn-secondary" href="{% url 'catalog:product_delete' object.pk %}" role="button">Удалить</a>
+
+              {% if request.user == object.product_author or perms.catalog.set_status_product and perms.catalog.change_info_product and perms.catalog.change_category_product %}
+                  <a class="btn btn-secondary" href="{% url 'catalog:product_update' object.pk %}" role="button">Изменить</a>
+                  <a class="btn btn-secondary" href="{% url 'catalog:product_delete' object.pk %}" role="button">Удалить</a>
+              {% endif %}
           {% endif %}
         </div>
       </div>

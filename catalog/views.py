@@ -5,14 +5,15 @@ from catalog.forms import *
 from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, DeleteView
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
 
 #CBV
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'catalog/index.html'
 
 
-class ContactsView(TemplateView):
+class ContactsView(LoginRequiredMixin, TemplateView):
     template_name = 'catalog/contacts.html'
     extra_context = {
         'title': 'Контакты'
@@ -35,19 +36,45 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy('catalog:products_list')
 
+
     def form_valid(self, form):
         product = form.save()
+
         product.user = self.request.user
+        product.product_author = self.request.user
         product.save()
         return super().form_valid(form)
 
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form_with_formset.html'
     success_url = reverse_lazy('catalog:products_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        user = self.request.user
+        if not user.has_perm('catalog.set_status_product'):
+            # Проверка авторства продукта
+            if self.object.product_author != user:
+                return self.handle_no_permission()
+
+        return kwargs
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        if not self.request.user.has_perm('catalog.change_info_product'):
+            form.fields.pop('product_info')
+        if not self.request.user.has_perm('catalog.set_status_product'):
+            form.fields.pop('product_status')
+        if not self.request.user.has_perm('catalog.change_category_product'):
+            form.fields.pop('product_category')
+
+        return form
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -62,45 +89,14 @@ class ProductUpdateView(UpdateView):
             context_data['formset'] = version_formset(self.request.POST, instance=self.object)
         else:
             context_data['formset'] = version_formset(instance=self.object)
-
         return context_data
-
-    def form_valid(self, form):
-        context_data = self.get_context_data()
-        formset = context_data['formset']
-        self.object = form.save()
-
-        if formset.is_valid():
-            formset.instance = self.object
-            formset.save()
-
-
-        return super().form_valid(form)
-
-    # def get_context_data(self, **kwargs):
-    #     context_data = super().get_context_data(**kwargs)
-    #     version_formset = inlineformset_factory(
-    #         Product,
-    #         ProductVersion,
-    #         form=ProductVersionForm,
-    #         extra=0,
-    #         can_delete=False
-    #     )
-    #     product = self.object
-    #     versions = ProductVersion.objects.filter(product=product).order_by('-actual_flg')
-    #     formset = version_formset(instance=product, queryset=versions)
-    #
-    #     context_data['formset'] = formset
-    #     return context_data
-    #
-
 
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:products_list')
 
 
-class BlogListView(ListView):
+class BlogListView(LoginRequiredMixin, ListView):
     model = Blog
 
     def get_queryset(self):

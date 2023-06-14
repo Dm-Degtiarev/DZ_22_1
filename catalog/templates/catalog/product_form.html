@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script src="/static/js/bootstrap.min.js"> </script>
+    <script src="/static/js/bootstrap.min.js"></script>
     <meta charset="UTF-8">
     <title>{% block title %}Создать товар{% endblock %}</title>
 </head>
 <body>
-
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+            {{ form.as_p }}
         <input type="submit" class="btn btn-success" value="{% if object %}Сохранить{% else %}Создать{% endif %}">
-        <a class="btn btn-secondary" href="{% url 'catalog:products_list' %}" role="button">Назад </a>
+        <a class="btn btn-secondary" href="{% url 'catalog:products_list' %}" role="button">Назад</a>
     </form>
-
 </body>
 </html>

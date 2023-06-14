@@ -6,13 +6,13 @@ from datetime import date
 NULLABLE = {'null': True, 'blank': True}
 
 class Product(models.Model):
-    #Задаем статус, и прописываем все варианты для данного атрибута. active - хранится в базе, Активный - отображается в админке
     STATUS = (
+        ('no active', 'Не активный'),
         ('active', 'Активный'),
         ('archive', 'В архиве'),
         ('await', 'На модерации')
     )
-
+    product_author = models.ForeignKey("user.User", on_delete=models.CASCADE, verbose_name='Автор публикации', **NULLABLE)
     product_name = models.CharField(max_length=200, verbose_name='Наименование')
     product_info = models.CharField(max_length=300, verbose_name='Описание')
     product_image = models.ImageField(upload_to='products/', verbose_name='Изображение', **NULLABLE)
@@ -20,30 +20,20 @@ class Product(models.Model):
     product_price = models.FloatField(max_length=20, verbose_name='Цена')
     product_create_date = models.DateField(verbose_name='Дата создания', default=date.today())
     product_last_upd_dt = models.DateField(verbose_name='Дата последнего изменения', default=date.today())
-    product_status = models.CharField(max_length=10, choices=STATUS, default='active', verbose_name='Статус')
+    product_status = models.CharField(max_length=10, choices=STATUS, default='no active', verbose_name='Статус')
 
     def __str__(self):
         return f"{self.pk} - {self.product_name}"
 
-    # def save(self, *args, **kwargs):
-    #     """При изменении товара архивирует предудыщую версию, а новую делает актуальной. счетчик версии +1"""
-    #     if self.pk:
-    #         ProductVersion.objects.filter(product=self).update(actual_flg=False)
-    #     super().save(*args, **kwargs)
-    #
-    #     latest_version = ProductVersion.objects.filter(product=self).order_by('-number').first()
-    #     number = latest_version.number if latest_version else 0
-    #
-    #     ProductVersion.objects.create(
-    #         product=self,
-    #         number=number,
-    #         actual_flg=True,
-    #         name=f'Изменено {date.today()}'
-    #     )
-
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+
+        permissions = [
+            ('set_status_product', 'Can publish product'),
+            ('change_info_product', 'Can change product info'),
+            ('change_category_product', 'Can change product category')
+        ]
 
 
 class ProductVersion(models.Model):
@@ -94,7 +84,7 @@ class Blog(models.Model):
     blog_create_date = models.DateField(verbose_name='Дата создания', default=date.today)
     blog_publicate_flg = models.BooleanField(verbose_name='Признак публикации', default=True)
     blog_views_count = models.IntegerField(verbose_name='Количество просмотров', default=0)
-    
+
     def __str__(self):
         return self.blog_name
 

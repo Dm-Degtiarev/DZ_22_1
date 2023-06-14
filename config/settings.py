@@ -153,4 +153,6 @@ AUTH_USER_MODEL = 'user.User'
 
 
 LOGIN_REDIRECT_URL = '/'  # Перенаправление после успешного входа в систему
-LOGOUT_REDIRECT_URL = reverse_lazy('user:login')  # Перенаправление после выхода из системы
+LOGOUT_REDIRECT_URL = '/'
+
+LOGIN_URL = 'login/'
