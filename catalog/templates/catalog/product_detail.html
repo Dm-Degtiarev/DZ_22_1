@@ -12,7 +12,7 @@
     <title>{% block title %}Главная{% endblock %}</title>
 </head>
 <body>
-    <tr> {{ object.product_name }}</tr>
+    <tr> {{ title }}</tr>
     <br>
     {% if object.product_image%}
         <img class="rounded-circle" src="{{ object.product_image.url }}" alt="Generic placeholder image" width="200" height="200">

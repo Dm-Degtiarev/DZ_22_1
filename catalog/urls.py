@@ -16,6 +16,8 @@ Including another URLconf
 """
 
 from django.urls import path
+from django.views.decorators.cache import cache_page, never_cache
+
 from catalog.apps import CatalogConfig
 from catalog.views import *
 
@@ -28,14 +30,15 @@ urlpatterns = [
     path('contacts/', ContactsView.as_view(), name='contacts'),
     path('products/', ProductListView.as_view(), name='products_list'),
     path('products/create/', ProductCreateView.as_view(), name='product_create'),
-    path('products/<int:pk>/', ProductDetailView.as_view(), name='product_item'),
+    path('products/<int:pk>/', cache_page(60)(ProductDetailView.as_view()), name='product_item'),
     path('products/update/<int:pk>/', ProductUpdateView.as_view(), name='product_update'),
     path('products/delete/<int:pk>/', ProductDeleteView.as_view(), name='product_delete'),
-    path('blog/', BlogListView.as_view(), name='blog'),
+    path('blog/', never_cache(BlogListView.as_view()), name='blog'),
     path('blog/create/', BlogCreateView.as_view(), name='blog_create'),
     path('blog/update/<blog_slug>/', BlogUpdateView.as_view(), name='blog_update'),
     path('blog/delete/<blog_slug>/', BlogDeleteView.as_view(), name='blog_delete'),
     path('blog/<blog_slug>/', BlogDetailView.as_view(), name='blog_detail'),
+    path('categories/', CategoryListView.as_view(), name='category'),
 
 
 ]

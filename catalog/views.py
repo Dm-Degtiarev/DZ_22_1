@@ -1,11 +1,14 @@
+from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
-from catalog.models import Product, ProductVersion, Contacts, Blog
+from catalog.models import Product, ProductVersion, Contacts, Blog, Category
 from catalog.forms import *
 from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, DeleteView
 from django.forms.models import inlineformset_factory
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.conf import settings
+
+from catalog.services import get_cache_categories
 
 
 #CBV
@@ -26,9 +29,26 @@ class ProductListView(ListView):
         'title': 'Товары'
     }
 
-
 class ProductDetailView(DetailView):
     model = Product
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = self.object.product_name
+
+        if settings.CACHE_ENABLE:
+            key = 'product_cache'
+            product_cache = cache.get(key)
+            if product_cache is None:
+                product_cache = self.object.product_name
+                cache.set(key, product_cache)
+        else:
+            product_cache = self.object.product_name
+
+        context_data['product_cache'] = product_cache
+
+
+        return context_data
 
 
 class ProductCreateView(CreateView):
@@ -36,15 +56,14 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy('catalog:products_list')
 
-
     def form_valid(self, form):
         product = form.save()
 
         product.user = self.request.user
         product.product_author = self.request.user
         product.save()
-        return super().form_valid(form)
 
+        return super().form_valid(form)
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
@@ -91,9 +110,15 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
             context_data['formset'] = version_formset(instance=self.object)
         return context_data
 
+
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:products_list')
+
+
+class CategoryListView(ListView):
+    model = Category
+    queryset = get_cache_categories()
 
 
 class BlogListView(LoginRequiredMixin, ListView):
